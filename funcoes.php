@@ -127,70 +127,65 @@ class Funcoes
     [1, 2, 1, 2]  false
     [3, 6, 5, 8, 10, 20, 15] false
     [1, 1, 2, 3, 4, 4] false
-    [1, 4, 10, 4, 2] false
+    [1, 4, 10, 4, 2] false 
     [10, 1, 2, 3, 4, 5] true
-    [1, 1, 1, 2, 3] false
-    [0, -2, 5, 6] true
-    [1, 2, 3, 4, 5, 3, 5, 6] false
-    [40, 50, 60, 10, 20, 30] false
-    [1, 1] true
-    [1, 2, 5, 3, 5] true
-    [1, 2, 5, 5, 5] false
-    [10, 1, 2, 3, 4, 5, 6, 1] false
-    [1, 2, 3, 4, 3, 6] true
-    [1, 2, 3, 4, 99, 5, 6] true
-    [123, -17, -5, 1, 2, 3, 12, 43, 45] true
+    [1, 1, 1, 2, 3] false 
+    [0, -2, 5, 6] true 
+    [1, 2, 3, 4, 5, 3, 5, 6] false 
+    [40, 50, 60, 10, 20, 30] false 
+    [1, 1] true 
+    [1, 2, 5, 3, 5] true 
+    [1, 2, 5, 5, 5] false 
+    [10, 1, 2, 3, 4, 5, 6, 1] false 
+    [1, 2, 3, 4, 3, 6] true 
+    [1, 2, 3, 4, 99, 5, 6] true 
+    [123, -17, -5, 1, 2, 3, 12, 43, 45] true 
     [3, 5, 67, 98, 3] true
 
      * */
     
 	public function SequenciaCrescente(array $arr): boolean {
-        $repetidos = array_count_values($arr);
-        $removido = 0;
+        $removidos  = 0;
+        $duplicados = array_count_values($arr);
 
-        $primeiro = $arr[0];
-        
-        $minimo = min($arr);
-        if($primeiro != $minimo && !is_array($repetidos)){
-          unset($arr[0]);
-          $removido ++;
-        }
+        foreach($arr as $key => $value){
 
-        $indice_maximo = array_key_last($arr);
-        $maximo = max($arr);
-        $ultimo = $arr[$indice_maximo];
+            $ultimo_index = array_key_last($arr); 
+            $primeiro_index = array_key_first($arr);
 
-        if($ultimo != $maximo && !is_array($repetidos)){
-            $indice  = array_search($maximo, $arr);
-            unset($arr[$indice]);
-            $removido ++;
+            $anterior = $key != 0 ? ($key - 1) : 0;
+            
+            if((isset($arr[$anterior]) &&  isset($arr[$key]) && $arr[$anterior] > $arr[$key])){
+                unset($arr[$anterior]);
+                $arr = array_values($arr);
+                $removidos++;
+            }
 
-        }
+            if(isset($duplicados[$value]) && $duplicados[$value] > 1){
+                for($i = 1; $i <= $duplicados[$value]; $i++){
+                    $index = array_search($value, $arr);
+                    unset($arr[$index]);
+                }
+                $removidos += ($duplicados[$value] - 1);
+                unset($duplicados[$value]);
+                $arr = array_values($arr);
+            }
 
-        for($i  = 0; $i < count($arr); $i++){
-            $anterior = $i -1;
-            $value = $arr[$i];
-
-            if(isset($arr[$anterior]) && $arr[$anterior] > $arr[$i] || (isset($arr[$anterior]) && $arr[$i] > $arr[$anterior])){
-                $removido++;
-                if($arr[$anterior] > $arr[$i]) {
-                    unset($arr[$anterior]);
-                } else {
-                    unset($arr[$i]);
+            if(isset($arr[$primeiro_index]) && isset($arr[$ultimo_index])) {
+                if($arr[$primeiro_index] > $arr[$ultimo_index]){
+                    unset($arr[$primeiro_index]);
+                    $arr = array_values($arr);
+                    $removidos++;
                 }
             }
 
-            if(isset($repetidos[$value]) && $repetidos[$value] > 1){
-                $removido += ($repetidos[$value] - 1);
-                unset($repetidos[$value]);
-                sort($arr);
-            }
-
-            if($removido > 1){
-                return false;
-            }
         }
 
-        return true;
+
+        if($removidos > 1){
+            return false;
+        } else {
+            return true;
+        }
     }
 }
